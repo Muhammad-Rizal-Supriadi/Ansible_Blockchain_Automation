@@ -1,0 +1,4 @@
+---
+# tasks file for remove-project
+- include_tasks: remove-project.yml
+- include_tasks: kill-prune.yml

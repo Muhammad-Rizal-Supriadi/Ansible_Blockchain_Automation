@@ -1,0 +1,7 @@
+---
+# chaincode
+- name : Chaincode
+  hosts: peer
+  gather_facts: false
+  roles:
+    - chaincode

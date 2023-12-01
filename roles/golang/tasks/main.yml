@@ -1,0 +1,14 @@
+---
+# tasks file for golang
+- name: Install golang
+  package:
+    name: golang
+    state: present
+
+- name: Check golang version
+  command: go version
+  register: golang_version
+
+- name: Debug golang version
+  debug:
+    var: golang_version.stdout

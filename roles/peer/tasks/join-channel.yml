@@ -1,0 +1,13 @@
+---
+- name: Set fact with incremented peer value
+  set_fact:
+    peer: "{{ groups['peer'].index(inventory_hostname) + 1 }}"
+
+- name: Debug peer value
+  debug:
+    var: hostvars[inventory_hostname]['peer']
+
+- name: Script Sheel Join Channel
+  shell: "{{ channel_path }}/joinChannel.sh {{ channel_name }} {{ militer_divisi }} {{ hostvars[inventory_hostname]['peer'] }}"
+  args:
+    chdir: "{{ channel_path }}"

@@ -1,0 +1,5 @@
+---
+- name: Generate channel anchor
+  shell: "{{ channel_anchor_path }}/setAnchorPeer.sh {{ channel_name }} {{ militer_divisi }} {{ peer }}"
+  args:
+    chdir: "{{ channel_anchor_path }}"

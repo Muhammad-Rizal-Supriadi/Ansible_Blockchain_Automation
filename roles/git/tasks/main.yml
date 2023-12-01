@@ -1,0 +1,14 @@
+---
+# tasks file for git
+- name: Install git
+  package:
+    name: git
+    state: present
+
+- name: Checking git version
+  command: git --version
+  register: git_version
+
+- name: Display git version
+  debug:
+    var: git_version.stdout

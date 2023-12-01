@@ -1,0 +1,101 @@
+version: "3.8"
+
+networks:
+      fabric_test:
+
+volumes:
+  data-peer{{ index }}.militer.intelijen.io:
+
+services:
+  couchdb:
+    container_name: couchdb
+    image: couchdb:3.2.2
+    environment:
+      - COUCHDB_USER={{ couchdb_user }}
+      - COUCHDB_PASSWORD={{ couchdb_password }}
+    ports:
+      - 0.0.0.0:5984:5984
+    networks:
+      - fabric_test
+
+  peer{{ index }}.militer.intelijen.io:
+    container_name: peer{{ index }}.militer.intelijen.io
+    extends:
+      file: base.yaml
+      service: peer-base
+    environment:
+      - CORE_PEER_LOCALMSPID=MiliterMSP
+      - CORE_PEER_ID=peer{{ index }}.militer.intelijen.io
+      - CORE_PEER_ADDRESS={{ groups['peer'][index | int - 1] }}:7051
+      - CORE_PEER_LISTENADDRESS=0.0.0.0:7051
+      - CORE_PEER_CHAINCODEADDRESS=peer{{ index }}.militer.intelijen.io:7052
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:7052
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=peer{{ index }}_fabric_test
+      # Peer used to bootstrap gossip within organisation
+ {% set peer_hosts = groups['peer'] %}
+ {% for peer_host in peer_hosts[:1] %}
+ {% if peer_host != inventory_hostname %}
+   - CORE_PEER_GOSSIP_BOOTSTRAP={{ hostvars[peer_host].ip }}:7051
+ {% endif %}
+ {% endfor %}
+
+ {% set peer_hosts = groups['peer'] %}
+ {% for peer_host in peer_hosts[1:] %}
+ {% if peer_host != inventory_hostname %}
+   - CORE_PEER_GOSSIP_BOOTSTRAP={{ hostvars[peer_host].ip }}:7051
+ {% endif %}
+ {% endfor %}
+
+      # Exposed for discovery Service
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT={{ groups['peer'][index | int - 1] }}:7051
+      # CouchDB Address
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb:5984
+    extra_hosts:
+{% for host in groups['orderer'] %}
+      - "orderer1.intelijen.io:{{ hostvars[host].ip }}"
+{% endfor %}
+  {% set peer_hosts = groups['peer'] %}
+  {% if peer_hosts and hostvars[peer_hosts[0]].ip != inventory_hostname %}
+  - "peer1.militer.intelijen.io:{{ hostvars[peer_hosts[0]].ip }}"
+  {% endif %}
+
+  {% for peer_host in peer_hosts[1:] %}
+  {% if hostvars[peer_host].ip != inventory_hostname %}
+  - "peer{{ loop.index + 1 }}.militer.intelijen.io:{{ hostvars[peer_host].ip }}"
+  {% endif %}
+  {% endfor %}
+
+    depends_on:
+      - couchdb
+    ports:
+      - 7051:7051
+    volumes:
+      - ./../ca/organizations/peer/militer.intelijen.io/peers/peer{{ index }}.militer.intelijen.io/msp:/etc/hyperledger/crypto/peer/msp
+      - ./../ca/organizations/peer/militer.intelijen.io/peers/peer{{ index }}.militer.intelijen.io/tls:/etc/hyperledger/crypto/peer/tls
+      - /var/run/:/host/var/run/
+      - data-peer{{ index }}.militer.intelijen.io:/var/hyperledger/production
+    networks:
+      - fabric_test
+  
+  cli:
+    container_name: cli
+    image: hyperledger/fabric-tools:2.2.10
+    labels:
+      service: hyperledger-fabric
+    tty: true
+    stdin_open: true
+    environment:
+      - GOPATH=/opt/gopath
+      - FABRIC_LOGGING_SPEC=INFO
+      - FABRIC_CFG_PATH=/etc/hyperledger/peercfg
+      - FABRIC_LOGGING_SPEC=DEBUG
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
+    command: /bin/bash
+    volumes:
+        - ./organizations:/opt/gopath/src/github.com/hyperledger/fabric/peer/organizations
+        - ./scripts:/opt/gopath/src/github.com/hyperledger/fabric/peer/scripts/
+        - ./docker/peercfg:/etc/hyperledger/peercfg
+    depends_on:
+      - peer{{ index }}.militer.intelijen.io
+    networks:
+      - fabric_test

@@ -1,0 +1,14 @@
+---
+# tasks file for curl
+- name: Install cURL
+  package:
+    name: curl
+    state: present
+
+- name: Check cURL version
+  command: curl --version
+  register: curl_version
+
+- name: Debug cURL version
+  debug:
+    var: curl_version.stdout

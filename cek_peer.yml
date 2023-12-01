@@ -1,0 +1,13 @@
+---
+- name: Test Peer
+  hosts: peer
+  gather_facts: false
+
+  tasks:
+    - name: Execute Command on Peer
+      command: peer
+      register: command_output
+
+    - name: Show Command Output
+      debug:
+        var: command_output.stdout_lines

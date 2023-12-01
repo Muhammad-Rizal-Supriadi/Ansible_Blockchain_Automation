@@ -1,0 +1,9 @@
+---
+# tasks file for prerequisites
+- include_tasks: ../../git/tasks/main.yml
+- include_tasks: ../../curl/tasks/main.yml
+- include_tasks: ../../golang/tasks/main.yml
+- include_tasks: ../../jq/tasks/main.yml
+- include_tasks: ../../nodejs/tasks/main.yml
+- include_tasks: ../../docker/tasks/main.yml
+- include_tasks: ../../python/tasks/main.yml

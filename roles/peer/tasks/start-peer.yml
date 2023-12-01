@@ -1,0 +1,3 @@
+---
+- name: Run peer service
+  raw: "docker-compose -f {{ peer_path }}/docker-compose.yaml up -d"

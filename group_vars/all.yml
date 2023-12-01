@@ -1,0 +1,77 @@
+---
+# Specify users which will be able to access docker without root privileges
+docker_users:
+  - "{{ ansible_user }}"
+# Restart policy for Docker containers
+docker_restart_policy: "always"
+
+# arg needed in setup blockchain
+project_name: "blockchain-intelijen-militer"
+channel_name: intelijen
+militer_divisi: militer
+
+peer: 1
+org1: orderer
+number_of_org1: 1
+org2: militer
+number_of_org2: 3
+
+# path
+home: "/home/{{ ansible_user }}"
+blockchain_dir_path: "{{ home }}/{{ project_name }}"
+fabric_dir_path: "{{ blockchain_dir_path }}/Fabric"
+fabric_ca_path: "{{ fabric_dir_path }}/ca"
+chaincode_path: "{{ fabric_dir_path }}/chaincode"
+channel_path: "{{ fabric_dir_path }}/channel"
+orderer_path: "{{ fabric_dir_path }}/orderer"
+peer_path: "{{ fabric_dir_path }}/peer1"
+artifacts: "{{ channel_path }}/artifacts"
+channel_artifacts_path: "{{ channel_path }}/artifacts"
+channel_anchor_path: "/{{ channel_artifacts_path }}/anchor-artifact"
+api: "{{ blockchain_dir_path }}/api-2.0/config"
+path_etc_env: "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin"
+
+# Use couchdb in peers instead of leveldb
+#use_couchdb: 'yes'
+use_couchdb: 'no'
+couchdb_port: 5984
+
+# Hyperledger framework version
+fabric_version: "2.4.8"
+fabric_pack: "{{ fabric_version }}"
+fabric_ca_version: "1.5.5" 
+fabric_ca_pack: "{{ fabric_ca_version }}"
+
+node_version: "16"
+docker_version: "1.5.5"
+
+# Hyperledger explorer configs
+hl_explorer_version: 1.1.1
+hl_explorer_port: 8080
+hl_explorer_username: "admin"
+hl_explorer_password: "adminpw"
+
+# Default HL fabric ports
+orderer_port: 7050
+api_port: 4000
+ca_port: 7054
+peer1_port: 7051
+
+#Chaincode configs
+
+
+chaincode_templates:
+  - from: "templates/chaincode/deployCC.sh"
+    to: "{{ chaincode }}/deployCC.sh"
+  - from: "templates/chaincode/checkCC.sh"
+    to: "{{ chaincode }}/checkCC.sh"
+  - from: "templates/chaincode/envVar.sh"
+    to: "{{ chaincode }}/envVar.sh"
+  - from: "templates/chaincode/scriptUtils.sh"
+    to: "{{ chaincode }}/scriptUtils.sh"
+
+files_hl_explorer:
+  - from: "artifact-templates/explorer-config.json"
+    to: "{{ fabric_artifacts }}/explorer-config.json"
+  - from: "docker-compose-templates/docker-composetemplate-explorer.yaml"
+    to: "{{ docker_artifacts }}/docker-compose-explorer.yaml"

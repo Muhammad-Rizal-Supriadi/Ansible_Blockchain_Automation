@@ -1,0 +1,14 @@
+---
+- name: Generate certificate organization orderer
+  shell: "{{ fabric_ca_path }}/generate-certificate-orderer.sh {{ org1 }} {{ number_of_org1 }}"
+  args: 
+    chdir: "{{ fabric_ca_path }}"
+
+- name: Pause for 2 seconds
+  pause:
+    seconds: 2
+    
+- name: Generate certificate organization peer
+  shell: "{{ fabric_ca_path }}/generate-certificate-org.sh {{ org2 }} {{ number_of_org2 }}"
+  args:
+    chdir: "{{ fabric_ca_path }}"

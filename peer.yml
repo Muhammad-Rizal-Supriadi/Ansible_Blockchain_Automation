@@ -1,0 +1,12 @@
+---
+# Peer1
+- name : Prerequsite
+  hosts: peer
+  gather_facts: false
+  vars_files:
+    - group_vars/couchdb.yml
+    - group_vars/git.yml
+
+  roles:
+    - role: pull-repo-and-add-binary
+    - role: peer

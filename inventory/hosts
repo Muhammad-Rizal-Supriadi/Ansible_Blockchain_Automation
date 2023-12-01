@@ -1,0 +1,10 @@
+[orderer]
+192.168.1.107 ip=192.168.1.107 ansible_user=ubuntu ansible_password=oeoenbentar orderer_port=7050
+; 192.168.1.19 ip=192.168.1.19 ansible_user=ubuntu ansible_password=oeoenbentar
+; 192.168.1.64 ip=192.168.1.64 ansible_user=ubuntu ansible_password=oeoenbentar
+
+[peer]
+192.168.1.108 ip=192.168.1.108 ansible_user=ubuntu ansible_password=oeoenbentar
+; 192.168.1.33 ip=192.168.1.33 ansible_user=pz ansible_password=12345678
+; 192.168.1.18 ip=192.168.1.18 ansible_user=ubuntu ansible_password=password123
+; 192.168.1.25 ip=192.168.1.25 ansible_user=ubuntu ansible_password=password123

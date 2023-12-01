@@ -1,0 +1,25 @@
+- name: Configure SSH Key-Based Authentication
+  hosts: vmhost4
+  gather_facts: false
+  become: true
+
+  tasks:
+    - name: Generate SSH Key Pair
+      shell: ssh-keygen -t rsa -N '' -f ~/.ssh/id_rsa
+      args:
+        creates: ~/.ssh/id_rsa
+
+    - name: Copy SSH Public Key to Hosts
+      authorized_key:
+        user: "{{ ansible_user }}"
+        key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
+      when: inventory_hostname != ansible_host
+
+    - name: Remove Password from Inventory
+      lineinfile:
+        path: inventory/hosts
+        state: absent
+        regexp: "^{{ inventory_hostname }} ansible_password=.*$"
+
+    - name: Test SSH Connection
+      ping:

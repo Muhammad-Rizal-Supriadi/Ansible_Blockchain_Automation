@@ -1,0 +1,30 @@
+---
+# tasks file for uninstall-docker
+- name: Stop and remove running containers
+  command: docker rm -f $(docker ps -aq)
+  ignore_errors: true
+
+- name: Remove Docker packages
+  expect:
+    command: sudo apt-get purge docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin docker-ce-rootless-extras
+    responses:
+      "Do you want to continue?": "Y"
+
+- name: Remove Docker directories
+  file:
+    path: "{{ item }}"
+    state: absent
+  with_items:
+    - /var/lib/docker
+    - /etc/docker
+    - /var/lib/containerd
+
+- name: Remove Docker user group
+  group:
+    name: docker
+    state: absent
+
+- name: Remove Docker user
+  user:
+    name: {{ ansible_user }}
+    state: absent

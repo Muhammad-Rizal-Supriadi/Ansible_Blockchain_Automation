@@ -1,0 +1,50 @@
+---
+- name : test
+  hosts: vmhost2
+  become: yes
+  gather_facts: false
+  tasks:
+
+
+
+
+
+
+
+
+
+
+    # - name: Clone the repository
+    #   become: false
+    #   git:
+    #     repo: "https://{{ git_username }}:{{ git_password }}@git.productzillaacademy.com/productzilla/final-kpu-hyperledger.git"
+    #     dest: "{{ blockchain_dir_path }}"
+    #     version: ansible-rizal
+    #     update: yes
+
+    # - name: run orderer service
+    #   raw: "docker-compose -f {{ project_name }}/Fabric/ca/docker-compose.yaml down"
+
+
+
+    # - name: Set executable permission // chmod 777
+    #   file:
+    #     path: "{{ project_name }}"
+    #     mode: '0777'
+
+
+
+    # untuk menjalankan program selanjutnya setelah file ini selesai di jalankan
+    # - include_tasks: cleanup_keys.yml
+
+    # - name: Check Binary Version
+    #   shell: peer version
+    #   register: hyperledger_version_output
+    
+    # - name: Display Binary Version
+    #   debug:
+    #     var: hyperledger_version_output.stdout_lines
+
+
+
+

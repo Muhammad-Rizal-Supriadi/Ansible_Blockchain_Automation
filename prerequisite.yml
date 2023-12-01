@@ -1,0 +1,9 @@
+---
+# All Host
+- name: Prerequisites
+  hosts: peer
+  become: true
+  gather_facts: false
+  roles:
+    # if you want to install all prerequisit
+    - prerequisites

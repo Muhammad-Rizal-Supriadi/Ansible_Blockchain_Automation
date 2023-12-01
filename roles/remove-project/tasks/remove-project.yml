@@ -1,0 +1,4 @@
+---
+- name: Delete the folder
+  command: rm -rf "{{ home }}/{{ project_name }}"
+  become: true

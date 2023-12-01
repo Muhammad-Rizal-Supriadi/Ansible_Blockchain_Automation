@@ -1,0 +1,32 @@
+---
+- name: Get running Docker container IDs
+  command: docker ps -q
+  become: true
+  register: docker_container_ids
+  changed_when: false
+
+- name: Kill running Docker containers
+  command: docker kill {{ item }}
+  become: true
+  loop: "{{ docker_container_ids.stdout_lines }}"
+  when: docker_container_ids.stdout_lines | length > 0
+
+- name: Prune Docker system
+  command: docker system prune -f
+  become: true
+
+- name: Execute Docker Volume Prune Command
+  command: docker volume prune --force
+  register: prune_output
+  
+- name: Display Prune Output
+  debug:
+    var: prune_output.stdout_lines
+
+- name: RM container peer data
+  command: docker volume rm peer1_data-peer1.militer.intelijen.io
+  register: peer_data
+  
+- name: Display rm peer data Output
+  debug:
+    var: peer_data.stdout_lines    

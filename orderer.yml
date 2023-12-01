@@ -1,0 +1,19 @@
+---
+- name: Prerequsite for Orderer
+  hosts: orderer
+  gather_facts: false
+  vars_files:
+    - group_vars/git.yml
+  roles:
+    - role: pull-repo-and-add-binary
+      when: inventory_hostname == groups['orderer'][0]
+
+    - role: orderer
+      when: inventory_hostname == groups['orderer'][0]
+
+    - role: pull-repo-and-add-binary
+      when: inventory_hostname != groups['orderer'][0]
+
+    - role: orderer
+      when: inventory_hostname != groups['orderer'][0]
+    

@@ -1,0 +1,41 @@
+---
+- script: scripts/get-hostname-index.py '{{ groups['peer'] | join(',')}}' {{ inventory_hostname }}
+  args:
+    executable: python3
+
+  register: output     
+
+- name: Create Docker Compose for peer
+  template:
+    src: templates/docker-compose.yml.j2
+    dest: "{{ peer_path }}/docker-compose.yaml"
+  vars:
+    peer_port: "{{ hostvars[item].peer_port }}"
+    index: "{{output.stdout}}"
+    couchdb_user: "{{ COUCHDB_USER }}"
+    couchdb_password: "{{ COUCHDB_PASSWORD }}"
+
+- name: Create Generate CPP
+  template:
+    src: templates/generate-ccp.sh.j2
+    dest: "{{ api }}/generate-ccp.sh"
+  vars:
+    peer_port: "{{ hostvars[item].peer_port }}"
+    index: "{{output.stdout}}"
+
+- name: Include peer-specific tasks peer anchor
+  include_tasks: "{{ item }}"
+  loop:
+    - start-peer.yml
+    - start-ca-peer.yml
+    - pause.yml
+    - join-channel.yml
+  when: inventory_hostname in groups['peer'][0:1]
+
+- name: Include peer-specific tasks peer 
+  include_tasks: "{{ item }}"
+  loop:
+    - start-peer.yml
+    - pause.yml
+    - join-channel.yml
+  when: inventory_hostname in groups['peer'][1:]

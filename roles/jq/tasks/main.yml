@@ -1,0 +1,14 @@
+---
+# tasks file for docker
+- name: Install jq
+  package:
+    name: jq
+    state: present
+
+- name: Check jq version
+  command: jq --version
+  register: jq_version
+
+- name: Debug jq version
+  debug:
+    var: jq_version.stdout

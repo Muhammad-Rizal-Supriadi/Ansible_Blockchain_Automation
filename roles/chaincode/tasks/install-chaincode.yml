@@ -1,0 +1,15 @@
+
+- name: Set fact with incremented peer value
+  set_fact:
+    peer: "{{ groups['peer'].index(inventory_hostname) + 1 }}"
+
+- name: Debug peer value
+  debug:
+    var: hostvars[inventory_hostname]['peer']
+
+- name: Peer install chaincode militer
+  shell: "{{ chaincode_path }}/installChaincode.sh {{ hostvars[inventory_hostname]['peer'] }} {{ militer_divisi }}"
+  args:
+    chdir: "{{ chaincode_path }}"
+    executable: /bin/bash
+

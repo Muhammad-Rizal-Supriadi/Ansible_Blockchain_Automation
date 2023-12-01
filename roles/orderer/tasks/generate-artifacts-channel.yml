@@ -1,0 +1,10 @@
+---
+- name: Generate channel artifact
+  shell: "{{ channel_artifacts_path }}/generate-channel-artifacts.sh {{ channel_name }} {{ militer_divisi }}"
+  args:
+    chdir: "{{ channel_artifacts_path }}"
+  register: "channel"
+
+- name: Debug cURL version
+  debug:
+    var: channel.stdout

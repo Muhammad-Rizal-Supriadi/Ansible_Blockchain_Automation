@@ -1,0 +1,17 @@
+---
+- name: run ca service
+  raw: "docker-compose -f {{ fabric_ca_path }}/docker-compose.yaml up -d"
+
+- name: Pause for 2 seconds
+  pause:
+    seconds: 2
+    
+- name: Set executable permission on fabric-ca
+  become: true
+  file:
+    path: "{{ fabric_ca_path }}/fabric-ca"
+    mode: '0777'
+
+- name: Pause for 2 seconds
+  pause:
+    seconds: 2

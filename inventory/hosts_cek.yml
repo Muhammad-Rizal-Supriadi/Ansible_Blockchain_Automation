@@ -1,0 +1,69 @@
+---
+all:
+  hosts:
+    localhost: # localhost connection parameters, used for storing configuration while transferring it between nodes
+      ansible_connection: local
+  vars:
+    global_domain: zillabc.io
+    global_chaincode_lang: typescript # Programming language of chaincode
+    global_chaincode_version: 1.0 # Your chaincode version
+    global_channels:
+      - name: senen # Channel name
+        particapants: # Organizations, should be included in channel
+          - Kpu
+        chaincode: # Chaincode params
+          name: chaincode
+          filename: chaincode
+          version: "{{ global_chaincode_version }}"
+          policy: ""
+          init: '{"Args":["init","a","100","b","100"]}'
+  children:
+    nodes:
+      hosts:
+        orderer.zillabc.io: # Describes which containers will run on this node
+          node_roles:
+            - root_orderer # This node will be used to generate crypto-config for other orderers
+            - orderer # This node will host an orderer-service
+            - explorer # This node will serve hyperledger fabric explorer
+          org: orderer # Organization name
+          org_id: 0
+          ansible_host: 192.168.1.37 # Real ip address or domain name of the machine
+          ansible_user: testing  # User with sudo access
+          absible_password: oeoenbentar # User Password
+          # ansible_private_key_file: ~/.ssh/id_rsa # Private key to identify ourselves
+          ansible_ssh_port: 22 # Specify ssh-port here, if case of it's not defaulted.
+        # Same structure for any other nodes
+        peer1.kpu.zillabc.io:
+          node_roles:
+            - peer # This node will host peers and api containers for organization
+            - explorer
+          org: Kpu
+          org_id: 1 # ID of orderer-service which is running on this host
+          ansible_host: 192.168.1.50 # Real ip address or domain name of the machine
+          ansible_user: algapra  # User with sudo access
+          absible_password: oeoenbentar # User Password
+          # ansible_private_key_file: ~/.ssh/id_rsa # Private key to identify ourselves
+          ansible_ssh_port: 22
+        peer2.kpu.zillabc.io:
+          node_roles:
+            - peer # This node will host peers and api containers for organization
+            - explorer
+          org: Kpu
+          org_id: 1 # ID of orderer-service which is running on this host
+          ansible_host: 192.168.1.42 # Real ip address or domain name of the machine
+          ansible_user: rizal  # User with sudo access
+          absible_password: oeoenbentar # User Password
+          # ansible_private_key_file: ~/.ssh/id_rsa # Private key to identify ourselves
+          ansible_ssh_port: 22
+        peer3.kpu.zillabc.io:
+          node_roles:
+            - peer # This node will host peers and api containers for organization
+            - explorer
+          org: Kpu
+          org_id: 1 # ID of orderer-service which is running on this host
+          ansible_host: 192.168.1.35 # Real ip address or domain name of the machine
+          ansible_user: pz  # User with sudo access
+          absible_password: 12345678 # User Password
+          # ansible_private_key_file: ~/.ssh/id_rsa # Private key to identify ourselves
+          ansible_ssh_port: 22
+          

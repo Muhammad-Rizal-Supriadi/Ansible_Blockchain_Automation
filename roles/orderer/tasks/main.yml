@@ -1,0 +1,53 @@
+---
+- name: Create Configtx for orderer
+  template:
+    src: templates/configtx.yml.j2
+    dest: "{{ artifacts }}/configtx.yaml"
+  loop: "{{ groups['orderer'] }}"
+  vars:
+    orderer_port: "{{ hostvars[item].orderer_port }}"
+
+- script: scripts/get-hostname-index.py '{{ groups['orderer'] | join(',')}}' {{ inventory_hostname }}
+  args:
+    executable: python3
+
+  register: output
+- name: Create Docker Compose for orderer
+  template:
+    src: templates/docker-compose.yml.j2
+    dest: "{{ orderer_path }}/docker-compose.yaml"
+  vars:
+    orderer_port: "{{ hostvars[item].orderer_port }}"
+    index: "{{output.stdout}}"
+
+- name: Create Join Channel
+  template:
+    src: templates/joinChannel.sh.j2
+    dest: "{{ channel_path }}/joinChannel.sh"
+
+- name: Create Anchor Peer
+  template:
+    src: templates/setAnchorPeer.sh.j2
+    dest: "{{ channel_anchor_path }}/setAnchorPeer.sh"    
+    
+- name: Include orderer-specific tasks orderer 
+  include_tasks: "{{ item }}"
+  loop:
+    - start-ca.yml
+    - generate-certificate.yml
+    - stop-docker-ca-kpu.yml
+    - remove-docker-ca-kpu.yml
+    - generate-artifacts-channel.yml
+    - start-orderer.yml
+    - pause.yml
+    - create-channel.yml
+    - generate-anchor-channel.yml
+    - remove-anchor.yml
+    - git-push.yml
+  when: inventory_hostname in groups['orderer'][0:1]
+
+- name: Include orderer-specific tasks orderer 
+  include_tasks: "{{ item }}"
+  loop:
+    - start-orderer.yml
+  when: inventory_hostname in groups['orderer'][1:]

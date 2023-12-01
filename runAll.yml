@@ -1,0 +1,65 @@
+---
+# All Host
+- name: Prerequisites
+  hosts: installasi
+  become: true
+  gather_facts: false
+  roles:
+    # if you want to install all prerequisit
+    - prerequisites
+
+# Orderer
+- name : Run node orderer with the setup
+  hosts: orderer
+  gather_facts: false
+  roles:
+    - pull-repo-and-add-binary
+    - orderer
+
+# Peer1
+- name : Run node peer 1 with the setup and join the channel
+  hosts: peer1
+  gather_facts: false
+  roles:
+    - pull-repo-and-add-binary
+    - peer1
+
+# Peer2
+- name : Run node peer 2 with the setup and join the channel
+  hosts: peer2
+  gather_facts: false
+  roles:
+    - pull-repo-and-add-binary
+    - peer2
+
+# Peer3
+- name : Run node peer 3 with the setup and join the channel
+  hosts: peer3
+  gather_facts: false
+  roles:
+    - pull-repo-and-add-binary
+    - peer3
+
+# Peer1
+- name : Install chaincode on channel peer 1
+  hosts: vmhost
+  gather_facts: false
+  roles:
+    - chaincode
+
+# Peer2
+- name : Install chaincode on channel peer 2
+  hosts: vmhost
+  gather_facts: false
+  roles:
+    - chaincode
+
+# Peer3
+- name : Install chaincode on channel peer 3
+  hosts: vmhost
+  gather_facts: false
+  playbook:
+  roles:
+    - chaincode
+
+

@@ -1,0 +1,118 @@
+---
+# tasks file for docker
+- name: Update apt package cache
+  apt:
+    update_cache: yes
+
+- name: Install docker required packages
+  apt:
+    name: ['apt-transport-https', 'ca-certificates', 'curl', 'gnupg', 'lsb-release']
+
+- name: Add docker GPG key
+  apt_key:
+    url: https://download.docker.com/linux/ubuntu/gpg
+    state: present
+
+- name: Add docker repository
+  apt_repository:
+    repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable"
+    state: present
+
+- name: Update apt package cache (again)
+  apt:
+    update_cache: yes
+    cache_valid_time: 3600
+      
+- name: Install docker
+  apt:
+    name: docker-ce
+    state: present
+    update_cache: yes
+    force_apt_get: yes
+    dpkg_options: 'force-confdef,force-confold'
+
+- name: Update package cache
+  apt:
+    update_cache: yes 
+
+- name: Install docker compose CLI plugin
+  apt:
+    name: docker-compose-plugin
+    state: present
+
+- name: Create docker CLI plugins directory
+  file:
+    path: "{{ lookup('env', 'HOME') }}/.docker/cli-plugins"
+    state: directory
+
+- name: Download docker compose CLI plugin
+  get_url:
+    url: "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-Linux-x86_64"
+    dest: "{{ lookup('env', 'HOME') }}/.docker/cli-plugins/docker-compose"
+    mode: "u=rw,g=r,o=r"
+    timeout: 60
+
+- name: Make docker compose executable
+  file:
+    path: "{{ lookup('env', 'HOME') }}/.docker/cli-plugins/docker-compose"
+    mode: "u=rwx,g=rx,o=rx"
+
+- name: Add local bin to .bashrc
+  lineinfile:
+    dest: "{{ lookup('env', 'HOME') }}/.bashrc"
+    line: 'export PATH="$HOME/.local/bin:$PATH"'
+    create: yes
+
+- name: Reload .bashrc
+  shell: source "{{ lookup('env', 'HOME') }}/.bashrc"
+  args:
+    executable: /bin/bash
+
+- name: Checking docker installation
+  command: docker -v
+  register: docker_output
+
+- name: Display docker version
+  debug:
+    var: docker_output.stdout
+
+- name: Checking docker compose installation
+  command: docker compose version
+  register: docker_compose_output
+
+- name: Display docker compose version
+  debug:
+    var: docker_compose_output.stdout
+ 
+- name: Set permissions for docker.sock
+  file:
+    path: /var/run/docker.sock
+    mode: '0666'
+
+- name: Create docker group
+  group:
+    name: docker
+    state: present
+
+- name: Add user to docker group
+  user:
+    name: "{{ ansible_user }}"
+    groups: docker
+    append: yes
+
+- name: Checking docker command execution without sudo
+  command: docker run hello-world
+  become: false
+
+- name: Change ownership of .docker directory
+  file:
+    path: "{{ lookup('env', 'HOME') }}/.docker"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    recurse: yes
+
+- name: Change permissions of .docker directory
+  file:
+    path: "{{ lookup('env', 'HOME') }}/.docker"
+    mode: "g+rwx"
+    recurse: yes

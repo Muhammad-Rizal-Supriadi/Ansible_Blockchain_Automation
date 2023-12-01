@@ -1,0 +1,10 @@
+- name: Copy folder from orderer to peer
+  hosts: vmhost4
+  become: true
+  tasks:
+    - name: Synchronize folder from orderer to peer
+      synchronize:
+        src: "{{ ansible_env.HOME }}/blockchain-kpu"
+        dest: "{{ ansible_env.HOME }}"
+        mode: push
+      delegate_to: vmhost2

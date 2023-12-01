@@ -1,0 +1,8 @@
+---
+# All Host
+- name: Remove Project
+  hosts: orderer
+  become: true
+  gather_facts: false
+  roles:
+    - remove-project

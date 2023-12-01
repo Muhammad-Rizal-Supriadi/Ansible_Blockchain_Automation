@@ -1,0 +1,19 @@
+---
+- name: git add all new files
+  become: true
+  shell: git add -A
+  args:
+    chdir: "{{ blockchain_dir_path }}"
+
+- name: git commit
+  become: true
+  shell: git commit -a -m "'{{ git_msg }}'"
+  args:
+    chdir: "{{ blockchain_dir_path }}"
+  ignore_errors: true
+
+- name: git push
+  become: true
+  shell: git push origin {{ git_branch }}
+  args:
+    chdir: "{{ blockchain_dir_path }}"

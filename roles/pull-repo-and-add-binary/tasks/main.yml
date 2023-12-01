@@ -1,0 +1,54 @@
+---
+# tasks file for pull-repo-and-add-binary
+- name: Clone blockchain repo
+  ansible.builtin.git:
+    repo: "https://{{ git_username }}:{{ git_password }}@{{ git_url }}"
+    dest: "{{ blockchain_dir_path }}"
+    update: yes
+    version: "{{ git_branch }}"
+
+- name: Register git username
+  shell: git config user.name "{{ git_username }}"
+  args:
+    chdir: "{{ blockchain_dir_path }}"
+  when: git_username is defined
+
+- name: Register git email
+  shell: git config user.email "{{ git_email }}"
+  args:
+    chdir: "{{ blockchain_dir_path }}"
+  when: git_email is defined
+
+- name: Pause for 5 seconds
+  pause:
+    seconds: 5
+
+- name: Update environment file
+  become: true
+  replace:
+    path: /etc/environment
+    regexp: '^PATH=.*'
+    replace: 'PATH="{{ path_etc_env }}:{{ blockchain_dir_path }}/bin"'
+
+- name: Reload environment variables
+  become: true
+  shell: source "/etc/environment"
+  args:
+    executable: /bin/bash
+
+- name: Pause for 5 seconds
+  pause:
+    seconds: 5
+    
+- name: Add fabric binaries to .bashrc
+  become: true
+  lineinfile: 
+    dest: "/home/{{ ansible_user }}/.bashrc"
+    line: 'export PATH=$PATH:{{ blockchain_dir_path }}/bin'
+    create: yes
+
+- name: Reload .bashrc
+  become: true
+  shell: source "/home/{{ ansible_user }}/.bashrc"
+  args:
+    executable: /bin/bash

@@ -1,0 +1,3 @@
+---
+- name: Remove the anchor folder
+  shell: rm -rf "{{ channel_anchor_path }}/anchor"

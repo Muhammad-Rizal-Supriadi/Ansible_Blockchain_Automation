@@ -1,0 +1,54 @@
+---
+- name: Stop and remove Docker containers
+  hosts: peer23
+  gather_facts: false
+  # become: true
+
+  tasks:
+    # - name: Stop all Docker containers
+    #   command: docker container stop ca_orderer.zillabc.io
+    #   changed_when: false
+
+    # - name: Remove all Docker containers
+    #   command: docker container rm ca_orderer.zillabc.io
+    #   changed_when: false
+
+    # - name: Stop all Docker containers
+    #   command: docker container stop orderer.zillabc.io
+    #   changed_when: false
+
+    # - name: Remove all Docker containers
+    #   command: docker container rm orderer.zillabc.io
+    #   changed_when: false
+
+    # - name: Stop all Docker containers
+    #   command: docker container stop ca.kpu.zillabc.io
+    #   changed_when: false
+
+    # - name: Remove all Docker containers
+    #   command: docker container rm ca.kpu.zillabc.io
+    #   changed_when: false
+
+    - name: Stop all Docker containers
+      command: docker container stop peer3.kpu.zillabc.io
+      changed_when: false
+
+    - name: Remove all Docker containers
+      command: docker container rm peer3.kpu.zillabc.io
+      changed_when: false
+
+    - name: Stop all Docker containers
+      command: docker container stop cli
+      changed_when: false
+
+    - name: Remove all Docker containers
+      command: docker container rm cli
+      changed_when: false
+
+    - name: Stop all Docker containers
+      command: docker container stop couchdb
+      changed_when: false
+
+    - name: Remove all Docker containers
+      command: docker container rm couchdb
+      changed_when: false

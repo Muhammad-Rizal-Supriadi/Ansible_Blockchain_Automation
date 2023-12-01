@@ -1,0 +1,3 @@
+---
+- name: run orderer service
+  raw: "docker-compose -f {{ orderer_path }}/docker-compose.yaml up -d"
